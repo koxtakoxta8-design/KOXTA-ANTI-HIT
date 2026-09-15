@@ -1,0 +1,535 @@
+--// KOXTA HUB - BLACK EDITION
+--// ULTRA TP - 5 POINTS
+--// PARA TU PROPIA EXPERIENCIA
+
+local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local LOGO = "rbxassetid://103645600156879"
+
+local Enabled = true
+local Busy = false
+local PanelOpen = true
+
+--// 5 COORDENADAS
+local Points = {
+	Vector3.new(500.62, 70.28, -366.64),
+	Vector3.new(508.30, 70.28, -366.03),
+	Vector3.new(519.43, 70.28, -366.47),
+	Vector3.new(529.22, 70.28, -366.71),
+	Vector3.new(546.80, 70.28, -364.40)
+}
+
+--// LIMPIAR GUI ANTERIOR
+local OldGui = PlayerGui:FindFirstChild("KOXTA_BLACK_TP")
+if OldGui then
+	OldGui:Destroy()
+end
+
+--==================================================
+-- SCREEN GUI
+--==================================================
+
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "KOXTA_BLACK_TP"
+Gui.ResetOnSpawn = false
+Gui.IgnoreGuiInset = true
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+Gui.Parent = PlayerGui
+
+--==================================================
+-- BOTON FLOTANTE
+--==================================================
+
+local Float = Instance.new("ImageButton")
+Float.Name = "KOXTA_FLOAT"
+Float.Size = UDim2.fromOffset(54,54)
+Float.Position = UDim2.new(1,-68,0,16)
+Float.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Float.BorderSizePixel = 0
+Float.Image = LOGO
+Float.ScaleType = Enum.ScaleType.Crop
+Float.ZIndex = 200
+Float.Parent = Gui
+
+local FloatCorner = Instance.new("UICorner")
+FloatCorner.CornerRadius = UDim.new(1,0)
+FloatCorner.Parent = Float
+
+local FloatStroke = Instance.new("UIStroke")
+FloatStroke.Thickness = 2
+FloatStroke.Color = Color3.fromRGB(255,255,255)
+FloatStroke.Parent = Float
+
+--==================================================
+-- PANEL
+--==================================================
+
+local Panel = Instance.new("Frame")
+Panel.Name = "KOXTA_PANEL"
+Panel.Size = UDim2.fromOffset(255,175)
+Panel.Position = UDim2.new(1,-270,0,78)
+Panel.BackgroundColor3 = Color3.fromRGB(2,2,2)
+Panel.BorderSizePixel = 0
+Panel.ClipsDescendants = true
+Panel.ZIndex = 14
+Panel.Parent = Gui
+
+local PanelCorner = Instance.new("UICorner")
+PanelCorner.CornerRadius = UDim.new(0,18)
+PanelCorner.Parent = Panel
+
+local PanelStroke = Instance.new("UIStroke")
+PanelStroke.Thickness = 2
+PanelStroke.Color = Color3.fromRGB(255,255,255)
+PanelStroke.Parent = Panel
+
+--==================================================
+-- LINEAS
+--==================================================
+
+for i = 1,10 do
+	local Line = Instance.new("Frame")
+	Line.Size = UDim2.new(1,0,0,1)
+	Line.Position = UDim2.new(0,0,i/11,0)
+	Line.BackgroundColor3 = Color3.fromRGB(255,255,255)
+	Line.BackgroundTransparency = 0.96
+	Line.BorderSizePixel = 0
+	Line.ZIndex = 15
+	Line.Parent = Panel
+end
+
+--==================================================
+-- PARTICULAS
+--==================================================
+
+local Particles = Instance.new("Folder")
+Particles.Name = "Particles"
+Particles.Parent = Panel
+
+for i = 1,25 do
+	local Particle = Instance.new("Frame")
+	local Size = math.random(2,4)
+
+	Particle.Size = UDim2.fromOffset(Size,Size)
+	Particle.Position = UDim2.new(
+		math.random(5,95)/100,0,
+		math.random(5,95)/100,0
+	)
+	Particle.BackgroundColor3 = Color3.fromRGB(255,255,255)
+	Particle.BackgroundTransparency = math.random(40,80)/100
+	Particle.BorderSizePixel = 0
+	Particle.ZIndex = 16
+	Particle.Parent = Particles
+
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(1,0)
+	Corner.Parent = Particle
+
+	task.spawn(function()
+		while Particle.Parent do
+			local Move = TweenService:Create(
+				Particle,
+				TweenInfo.new(
+					math.random(8,18)/10,
+					Enum.EasingStyle.Sine,
+					Enum.EasingDirection.InOut
+				),
+				{
+					Position = UDim2.new(
+						math.random(5,95)/100,0,
+						math.random(5,95)/100,0
+					)
+				}
+			)
+
+			Move:Play()
+			Move.Completed:Wait()
+		end
+	end)
+end
+
+--==================================================
+-- SCANNER
+--==================================================
+
+local Scanner = Instance.new("Frame")
+Scanner.Size = UDim2.new(1,0,0,1)
+Scanner.Position = UDim2.new(0,0,-0.1,0)
+Scanner.BackgroundColor3 = Color3.fromRGB(255,255,255)
+Scanner.BackgroundTransparency = 0.35
+Scanner.BorderSizePixel = 0
+Scanner.ZIndex = 20
+Scanner.Parent = Panel
+
+task.spawn(function()
+	while Scanner.Parent do
+		Scanner.Position = UDim2.new(0,0,-0.1,0)
+
+		local Scan = TweenService:Create(
+			Scanner,
+			TweenInfo.new(1.2,Enum.EasingStyle.Linear),
+			{
+				Position = UDim2.new(0,0,1.1,0)
+			}
+		)
+
+		Scan:Play()
+		Scan.Completed:Wait()
+	end
+end)
+
+--==================================================
+-- LOGO
+--==================================================
+
+local Logo = Instance.new("ImageLabel")
+Logo.Size = UDim2.fromOffset(48,48)
+Logo.Position = UDim2.fromOffset(10,10)
+Logo.BackgroundColor3 = Color3.fromRGB(0,0,0)
+Logo.BorderSizePixel = 0
+Logo.Image = LOGO
+Logo.ScaleType = Enum.ScaleType.Crop
+Logo.ZIndex = 50
+Logo.Parent = Panel
+
+local LogoCorner = Instance.new("UICorner")
+LogoCorner.CornerRadius = UDim.new(1,0)
+LogoCorner.Parent = Logo
+
+local LogoStroke = Instance.new("UIStroke")
+LogoStroke.Thickness = 1.5
+LogoStroke.Color = Color3.fromRGB(255,255,255)
+LogoStroke.Parent = Logo
+
+--==================================================
+-- TITULO
+--==================================================
+
+local Title = Instance.new("TextLabel")
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.fromOffset(68,10)
+Title.Size = UDim2.new(1,-80,0,25)
+Title.Text = "KOXTA HUB"
+Title.TextColor3 = Color3.fromRGB(255,255,255)
+Title.Font = Enum.Font.GothamBlack
+Title.TextSize = 17
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.ZIndex = 50
+Title.Parent = Panel
+
+--==================================================
+-- SUBTITULO
+--==================================================
+
+local Subtitle = Instance.new("TextLabel")
+Subtitle.BackgroundTransparency = 1
+Subtitle.Position = UDim2.fromOffset(69,32)
+Subtitle.Size = UDim2.new(1,-80,0,16)
+Subtitle.Text = "[ BLACK ULTRA TELEPORT ]"
+Subtitle.TextColor3 = Color3.fromRGB(180,180,180)
+Subtitle.Font = Enum.Font.Code
+Subtitle.TextSize = 9
+Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+Subtitle.ZIndex = 50
+Subtitle.Parent = Panel
+
+--==================================================
+-- SEPARADOR
+--==================================================
+
+local Separator = Instance.new("Frame")
+Separator.Position = UDim2.fromOffset(10,64)
+Separator.Size = UDim2.new(1,-20,0,1)
+Separator.BackgroundColor3 = Color3.fromRGB(255,255,255)
+Separator.BackgroundTransparency = 0.45
+Separator.BorderSizePixel = 0
+Separator.ZIndex = 50
+Separator.Parent = Panel
+
+--==================================================
+-- ESTADO
+--==================================================
+
+local Status = Instance.new("TextLabel")
+Status.Position = UDim2.fromOffset(10,72)
+Status.Size = UDim2.new(1,-20,0,27)
+Status.BackgroundColor3 = Color3.fromRGB(10,10,10)
+Status.BorderSizePixel = 0
+Status.Text = "   ●  SYSTEM READY"
+Status.TextColor3 = Color3.fromRGB(255,255,255)
+Status.Font = Enum.Font.GothamBold
+Status.TextSize = 11
+Status.TextXAlignment = Enum.TextXAlignment.Left
+Status.ZIndex = 50
+Status.Parent = Panel
+
+local StatusCorner = Instance.new("UICorner")
+StatusCorner.CornerRadius = UDim.new(0,8)
+StatusCorner.Parent = Status
+
+--==================================================
+-- BOTON ULTRA TP
+--==================================================
+
+local Toggle = Instance.new("TextButton")
+Toggle.Name = "ULTRA_TP"
+Toggle.Position = UDim2.fromOffset(10,110)
+Toggle.Size = UDim2.new(1,-20,0,45)
+Toggle.BackgroundColor3 = Color3.fromRGB(10,10,10)
+Toggle.BorderSizePixel = 0
+Toggle.RichText = true
+Toggle.Text =
+	'<font color="rgb(255,255,255)">[+] ULTRA TP • </font>' ..
+	'<font color="rgb(0,255,100)">ON</font>'
+Toggle.TextColor3 = Color3.fromRGB(255,255,255)
+Toggle.Font = Enum.Font.GothamBlack
+Toggle.TextSize = 13
+Toggle.AutoButtonColor = false
+Toggle.ZIndex = 80
+Toggle.Parent = Panel
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0,10)
+ToggleCorner.Parent = Toggle
+
+--// BORDE BLANCO
+local ToggleStroke = Instance.new("UIStroke")
+ToggleStroke.Thickness = 2
+ToggleStroke.Color = Color3.fromRGB(255,255,255)
+ToggleStroke.Transparency = 0
+ToggleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+ToggleStroke.Parent = Toggle
+
+--==================================================
+-- ON / OFF
+--==================================================
+
+Toggle.MouseButton1Click:Connect(function()
+
+	Enabled = not Enabled
+
+	if Enabled then
+
+		Toggle.Text =
+			'<font color="rgb(255,255,255)">[+] ULTRA TP • </font>' ..
+			'<font color="rgb(0,255,100)">ON</font>'
+
+		Status.Text = "   ●  SYSTEM READY"
+		Status.TextColor3 = Color3.fromRGB(255,255,255)
+
+	else
+
+		Toggle.Text =
+			'<font color="rgb(255,255,255)">[-] ULTRA TP • </font>' ..
+			'<font color="rgb(255,60,60)">OFF</font>'
+
+		Status.Text = "   ○  SYSTEM DISABLED"
+		Status.TextColor3 = Color3.fromRGB(180,180,180)
+
+	end
+
+end)
+
+--==================================================
+-- ABRIR / CERRAR
+--==================================================
+
+Float.MouseButton1Click:Connect(function()
+	PanelOpen = not PanelOpen
+	Panel.Visible = PanelOpen
+end)
+
+--==================================================
+-- PANEL MOVIBLE
+--==================================================
+
+local Dragging = false
+local DragStart
+local StartPosition
+
+Title.InputBegan:Connect(function(Input)
+
+	if Input.UserInputType == Enum.UserInputType.MouseButton1
+		or Input.UserInputType == Enum.UserInputType.Touch then
+
+		Dragging = true
+		DragStart = Input.Position
+		StartPosition = Panel.Position
+
+	end
+
+end)
+
+UserInputService.InputChanged:Connect(function(Input)
+
+	if not Dragging then
+		return
+	end
+
+	if Input.UserInputType == Enum.UserInputType.MouseMovement
+		or Input.UserInputType == Enum.UserInputType.Touch then
+
+		local Delta = Input.Position - DragStart
+
+		Panel.Position = UDim2.new(
+			StartPosition.X.Scale,
+			StartPosition.X.Offset + Delta.X,
+			StartPosition.Y.Scale,
+			StartPosition.Y.Offset + Delta.Y
+		)
+
+	end
+
+end)
+
+UserInputService.InputEnded:Connect(function(Input)
+
+	if Input.UserInputType == Enum.UserInputType.MouseButton1
+		or Input.UserInputType == Enum.UserInputType.Touch then
+
+		Dragging = false
+
+	end
+
+end)
+
+--==================================================
+-- RUTA DE 5 PUNTOS
+--==================================================
+
+local function DoRoute(Character)
+
+	if not Enabled then
+		return
+	end
+
+	if not Character or not Character.Parent then
+		return
+	end
+
+	for Index, Position in ipairs(Points) do
+
+		if not Enabled then
+			Status.Text = "   ○  ROUTE STOPPED"
+			Status.TextColor3 = Color3.fromRGB(255,60,60)
+			return
+		end
+
+		Status.Text = "   [TP] POINT "..Index.."/5"
+		Status.TextColor3 = Color3.fromRGB(255,255,255)
+
+		Character:PivotTo(CFrame.new(Position))
+
+		if Index < #Points then
+			RunService.Heartbeat:Wait()
+		end
+
+	end
+
+	Status.Text = "   [OK] ROUTE COMPLETE"
+	Status.TextColor3 = Color3.fromRGB(0,255,100)
+
+end
+
+--==================================================
+-- PROXIMITY PROMPT
+--==================================================
+
+ProximityPromptService.PromptTriggered:Connect(function(Prompt, WhoTriggered)
+
+	if WhoTriggered ~= Player then
+		return
+	end
+
+	if not Enabled or Busy then
+		return
+	end
+
+	local Character = Player.Character
+	if not Character then
+		return
+	end
+
+	Busy = true
+	DoRoute(Character)
+	Busy = false
+
+end)
+
+--==================================================
+-- ANIMACION DEL PANEL
+--==================================================
+
+task.spawn(function()
+
+	while Panel.Parent do
+
+		local A = TweenService:Create(
+			PanelStroke,
+			TweenInfo.new(1),
+			{Transparency = 0.55}
+		)
+
+		A:Play()
+		A.Completed:Wait()
+
+		local B = TweenService:Create(
+			PanelStroke,
+			TweenInfo.new(1),
+			{Transparency = 0}
+		)
+
+		B:Play()
+		B.Completed:Wait()
+
+	end
+
+end)
+
+--==================================================
+-- ANIMACION DEL BOTON FLOTANTE
+--==================================================
+
+task.spawn(function()
+
+	while Float.Parent do
+
+		local A = TweenService:Create(
+			FloatStroke,
+			TweenInfo.new(0.8),
+			{Transparency = 0.55}
+		)
+
+		A:Play()
+		A.Completed:Wait()
+
+		local B = TweenService:Create(
+			FloatStroke,
+			TweenInfo.new(0.8),
+			{Transparency = 0}
+		)
+
+		B:Play()
+		B.Completed:Wait()
+
+	end
+
+end)
+
+print("================================")
+print("       KOXTA HUB BLACK")
+print("================================")
+print(" LOGO: 103645600156879")
+print(" POINTS: 5")
+print(" ON: GREEN")
+print(" OFF: RED")
+print(" BUTTON BORDER: WHITE")
+print(" AUTO GRAB: DISABLED")
+print("================================")
